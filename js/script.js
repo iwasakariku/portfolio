@@ -163,42 +163,74 @@ function drawSnow(time = 0) {
 }
 
 function animateInstruments(container) {
-  const CIRCUMFERENCE = 2 * Math.PI * 32; // ≈ 201.06
+  const CIRC = 2 * Math.PI * 56; // circumference ≈ 351.86
+  const segs = container.querySelectorAll(".donut-seg[data-value]");
 
-  // 円形ゲージ
-  container.querySelectorAll(".gauge-fill[data-value]").forEach((el) => {
-    const value = parseFloat(el.dataset.value) / 100;
-    el.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - value));
+  segs.forEach((seg) => {
+    const value = parseFloat(seg.dataset.value) / 100;
+    const offset = parseFloat(seg.dataset.offset) / 100;
+    const arc = CIRC * value;
+    // stroke-dasharray: このセグメントの長さ + 残りのギャップ
+    // stroke-dashoffset: CIRC - (前セグメント合計) で始点を合わせる
+    seg.style.strokeDasharray = `${arc} ${CIRC - arc}`;
+    seg.style.strokeDashoffset = String(CIRC * (1 - offset));
   });
 }
 
 function setupGaugeTabs() {
-  document.querySelectorAll(".gauges[role='tablist']").forEach((tablist) => {
-    tablist.addEventListener("click", (e) => {
-      const btn = e.target.closest(".gauge-item[data-panel]");
-      if (!btn) return;
+  document.querySelectorAll(".instrument-panel").forEach((panel) => {
+    const legendBtns = panel.querySelectorAll(".legend-item[data-panel]");
+    const donutSegs = panel.querySelectorAll(".donut-seg[data-panel]");
+    const gaugePanels = panel.querySelectorAll(".gauge-panel");
+    const donutPct = panel.querySelector(".donut-pct");
+    const donutName = panel.querySelector(".donut-name");
 
-      // タブ切り替え
-      tablist.querySelectorAll(".gauge-item").forEach((b) => {
-        b.classList.remove("is-active");
-        b.setAttribute("aria-selected", "false");
-      });
-      btn.classList.add("is-active");
-      btn.setAttribute("aria-selected", "true");
+    const labels = {
+      laravel: "LARAVEL",
+      ai: "AI",
+      design: "DESIGN",
+      lead: "LEAD",
+    };
+    const pcts = { laravel: "55%", ai: "20%", design: "10%", lead: "15%" };
 
-      // パネル切り替え
-      const panelId = "panel-" + btn.dataset.panel;
-      const container = tablist.closest(".instrument-panel");
-      container.querySelectorAll(".gauge-panel").forEach((p) => {
-        p.classList.remove("is-active");
-        p.hidden = true;
+    function activate(key) {
+      // 凡例ボタン
+      legendBtns.forEach((b) => {
+        const active = b.dataset.panel === key;
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-selected", String(active));
       });
-      const target = document.getElementById(panelId);
-      if (target) {
-        target.classList.add("is-active");
-        target.hidden = false;
-      }
+
+      // ドーナツセグメント
+      donutSegs.forEach((s) => {
+        s.classList.toggle("is-active", s.dataset.panel === key);
+      });
+
+      // 中央テキスト
+      if (donutPct) donutPct.textContent = pcts[key] ?? "";
+      if (donutName) donutName.textContent = labels[key] ?? "";
+
+      // 詳細パネル
+      gaugePanels.forEach((p) => {
+        const active = p.id === "panel-" + key;
+        p.classList.toggle("is-active", active);
+        p.hidden = !active;
+      });
+    }
+
+    // 凡例クリック
+    legendBtns.forEach((btn) => {
+      btn.addEventListener("click", () => activate(btn.dataset.panel));
     });
+
+    // ドーナツセグメントクリック
+    donutSegs.forEach((seg) => {
+      seg.style.cursor = "pointer";
+      seg.addEventListener("click", () => activate(seg.dataset.panel));
+    });
+
+    // 初期状態
+    activate("laravel");
   });
 }
 

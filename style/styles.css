@@ -464,88 +464,157 @@ body.is-in-sky .depth-marker {
   background: var(--panel);
 }
 
-/* ゲージ行（タブリスト） */
+/* ゲージ行（ドーナツ＋凡例） */
 .gauges {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 160px 1fr;
+  gap: 28px;
+  align-items: center;
+  padding: 24px 28px;
   border-bottom: 1px solid var(--line);
 }
 
-.gauge-item {
+/* ドーナツチャート */
+.donut-wrap {
   position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  padding: 20px 12px 16px;
-  background: none;
-  border: none;
-  border-right: 1px solid var(--line);
-  color: inherit;
-  cursor: pointer;
-  transition: background 0.15s;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
 }
 
-.gauge-item:last-child {
-  border-right: none;
-}
-
-.gauge-item:hover {
-  background: rgba(234, 241, 248, 0.04);
-}
-
-.gauge-item.is-active {
-  background: rgba(94, 188, 255, 0.07);
-}
-
-.gauge-ring {
-  width: 72px;
-  height: 72px;
+.donut-chart {
+  width: 160px;
+  height: 160px;
   transform: rotate(-90deg);
 }
 
-.gauge-bg {
+/* セグメントカラー: 4色 */
+:root {
+  --seg-0: rgba(94, 188, 255, 1); /* LARAVEL — 青 */
+  --seg-1: rgba(120, 220, 180, 1); /* AI      — 緑 */
+  --seg-2: rgba(255, 200, 80, 1); /* DESIGN  — 黄 */
+  --seg-3: rgba(200, 160, 255, 1); /* LEAD    — 紫 */
+}
+
+.donut-seg {
   fill: none;
-  stroke: rgba(234, 241, 248, 0.14);
-  stroke-width: 5;
+  stroke-width: 22;
+  stroke-linecap: butt;
+  /* circumference = 2π×56 ≈ 351.86 */
+  stroke-dasharray: 0 351.86; /* JS でアニメーション */
+  transition:
+    stroke-dasharray 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s;
 }
 
-.gauge-fill {
-  fill: none;
-  stroke: rgba(94, 188, 255, 0.45);
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-dasharray: 201.06;
-  stroke-dashoffset: 201.06;
-  transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+.donut-seg:nth-child(1) {
+  stroke: var(--seg-0);
+}
+.donut-seg:nth-child(2) {
+  stroke: var(--seg-1);
+}
+.donut-seg:nth-child(3) {
+  stroke: var(--seg-2);
+}
+.donut-seg:nth-child(4) {
+  stroke: var(--seg-3);
 }
 
-.gauge-item.is-active .gauge-fill {
-  stroke: rgba(94, 188, 255, 1);
+.donut-seg:not(.is-active) {
+  opacity: 0.35;
 }
 
-.gauge-value {
+.donut-seg.is-active {
+  opacity: 1;
+}
+
+/* 中央テキスト */
+.donut-center {
   position: absolute;
-  top: calc(20px + 36px - 9px);
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.donut-pct {
   color: var(--ink);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 13px;
+  font-size: 22px;
   font-weight: 500;
   letter-spacing: 0.02em;
   line-height: 1;
-  white-space: nowrap;
 }
 
-.gauge-label {
+.donut-name {
   color: var(--muted-4);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 9px;
   letter-spacing: 0.22em;
 }
 
-.gauge-item.is-active .gauge-label {
-  color: rgba(94, 188, 255, 0.9);
+/* 凡例 */
+.donut-legend {
+  display: grid;
+  gap: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ink-body);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  text-align: left;
+}
+
+.legend-item:hover {
+  background: rgba(234, 241, 248, 0.04);
+}
+
+.legend-item.is-active {
+  border-color: var(--line);
+  background: rgba(234, 241, 248, 0.05);
+  color: var(--ink);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-dot[style="--c:0"] {
+  background: var(--seg-0);
+}
+.legend-dot[style="--c:1"] {
+  background: var(--seg-1);
+}
+.legend-dot[style="--c:2"] {
+  background: var(--seg-2);
+}
+.legend-dot[style="--c:3"] {
+  background: var(--seg-3);
+}
+
+.legend-pct {
+  margin-left: auto;
+  color: var(--muted-4);
+  font-size: 10px;
 }
 
 /* 詳細パネル */
@@ -628,16 +697,8 @@ body.is-in-sky .depth-marker {
 
 @media (max-width: 720px) {
   .gauges {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .gauge-item:nth-child(2) {
-    border-right: none;
-  }
-
-  .gauge-item:nth-child(1),
-  .gauge-item:nth-child(2) {
-    border-bottom: 1px solid var(--line);
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 
   .gauge-panels {

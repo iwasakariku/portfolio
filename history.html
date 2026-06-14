@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="陸駆のキャリア年表。QAから始まり7年間のサーバーサイドエンジニアとしての歩み。"
+    >
+    <title>CAREER LOG — 陸駆 Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="./style/styles.css?v=hist">
+    <link rel="stylesheet" href="./style/history.css?v=hist">
+  </head>
+  <body>
+    <canvas id="marine-snow" aria-hidden="true"></canvas>
+    <div class="sun-rays" aria-hidden="true"></div>
+
+    <aside class="dive-meter" aria-label="現在の深度">
+      <div class="meter-readout">
+        <span class="meter-label">DEPTH</span>
+        <span id="depth-value">0000m</span>
+      </div>
+      <div class="meter-track" aria-hidden="true">
+        <div class="meter-ticks"></div>
+        <div id="depth-marker" class="depth-marker"></div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- ── Section 0: Hero ──────────────────────────────────────── -->
+      <section class="section hero" id="surface" data-depth="0" aria-labelledby="career-title">
+        <div class="content hero-content reveal">
+          <p class="kicker">CAREER LOG / 0000M</p>
+          <h1 id="career-title">キャリアの記録。</h1>
+          <p class="hero-sub">7 YEARS — SERVER-SIDE ENGINEER</p>
+          <p class="lead">
+            1年目から7年目まで、何をやってきたか。<br>スクロールで潜るほど、深くなる。
+          </p>
+          <a class="dive-cue" href="#year-1" aria-label="Year 01へ進む">
+            <span>DIVE ↓</span>
+            <i aria-hidden="true"></i>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── Section 1: Year 01–02 ─────────────────────────────────── -->
+      <section class="section" id="year-1" data-depth="300" aria-labelledby="year1-title">
+        <div class="content reveal">
+          <p class="depth-tag">-0300M / YEAR 01–02</p>
+          <h2 id="year1-title">QAから開発へ。最初の潜水。</h2>
+          <p>
+            QAテスターとして入社。品質の視点でコードを見続けた1年目。
+            2年目から開発に転向し、社内収支管理システム（PHP/Laravel）のフルスタック開発を担当。
+            レガシーコードの解析・ドキュメント化、打刻データ連携などの大型機能追加を経験。
+          </p>
+
+          <div class="year-stack" data-year="1" aria-label="スキル比率">
+            <div class="year-stack-bar" role="img" aria-label="Laravel 100%">
+              <!-- --pct:100にすると文字列が表示されない -->
+              <div class="year-stack-seg" style="--pct:99; --c:0" data-label="Laravel">
+                <span>Laravel</span><span>100%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 2: Year 02–03 ─────────────────────────────────── -->
+      <section class="section" id="year-2" data-depth="600" aria-labelledby="year2-title">
+        <div class="content reveal">
+          <p class="depth-tag">-0600M / YEAR 02–03</p>
+          <h2 id="year2-title">自社サービスを育て、カスタマーを知る。</h2>
+          <p>
+            イベント管理SaaS「eventos」の機能開発とディレクションを兼務。
+            カスタマーサクセスとして顧客と向き合いながら、周辺システムの構築を牽引。
+            ユーザーの声を設計に変換する回路がここで育った。
+          </p>
+
+          <div class="year-stack" data-year="2" aria-label="スキル比率">
+            <div class="year-stack-bar" role="img" aria-label="Laravel 70%, CS/Dir 30%">
+              <div class="year-stack-seg" style="--pct:70; --c:0" data-label="Laravel">
+                <span>Laravel</span><span>70%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:30; --c:2" data-label="CS/Dir">
+                <span>CS/Dir</span><span>30%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: Year 04 ────────────────────────────────────── -->
+      <section class="section" id="year-3" data-depth="900" aria-labelledby="year3-title">
+        <div class="content reveal">
+          <p class="depth-tag">-0900M / YEAR 04</p>
+          <h2 id="year3-title">0→1の開発と、上流への踏み込み。</h2>
+
+          <div class="year-topics" aria-label="4年目のトピック">
+            <article class="year-topic">
+              <h3>マルチプラットフォーム開発</h3>
+              <p>
+                Android(Kotlin)ネイティブ開発、サブスクリプション設計、Firebase Push通知基盤の構築。
+                テナント自動切替ライブラリを自ら調査・導入しSaaS構築を効率化。
+              </p>
+            </article>
+            <article class="year-topic">
+              <h3>上流からの一気通貫</h3>
+              <p>
+                カスタマーサクセス経験を活かし顧客との直接折衝から参画。
+                曖昧な要求を要件・仕様・設計へ落とし込み、ビジネス視点の開発ディレクションを遂行。
+              </p>
+            </article>
+            <article class="year-topic">
+              <h3>主要実績</h3>
+              <p>
+                農業×マッチング（大手人材系）、スポーツ教育×動画解析（大手通信キャリア）、
+                こども向け動画事業（大手教育系）のバックエンド・モバイル開発。
+              </p>
+            </article>
+          </div>
+
+          <div class="year-stack" data-year="3" aria-label="スキル比率">
+            <div class="year-stack-bar" role="img" aria-label="Laravel 50%, Mobile 30%, Dir 20%">
+              <div class="year-stack-seg" style="--pct:50; --c:0" data-label="Laravel">
+                <span>Laravel</span><span>50%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:30; --c:3" data-label="Mobile">
+                <span>Mobile</span><span>30%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:19; --c:2" data-label="Dir">
+                <span>Dir</span><span>20%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 4: Year 05 ────────────────────────────────────── -->
+      <section class="section" id="year-4" data-depth="1400" aria-labelledby="year4-title">
+        <div class="content reveal">
+          <p class="depth-tag">-1400M / YEAR 05</p>
+          <h2 id="year4-title">システムが止まると物流が止まる。その設計。</h2>
+
+          <ol class="year-list" aria-label="5年目の主な取り組み">
+            <li>秒間8決済規模の外部APIとのトランザクション設計。デッドロック回避とデータ整合性の担保が至上命題。</li>
+            <li>悲観ロック/楽観ロックの適切な使い分けとトランザクション局所化で同時実行性を最大化。</li>
+            <li>N+1完全排除、MySQLインデックス設計のクエリプランベース最適化。</li>
+            <li>PestPHPでカバレッジ95%維持。リリース後の不具合0件を継続。</li>
+            <li>成果：性能遅延・不具合問い合わせ0件の安定稼働。評価が新規プロジェクト（ブランド返品鑑定WMS）の打診に直結。</li>
+          </ol>
+
+          <div class="year-stack" data-year="4" aria-label="スキル比率">
+            <div class="year-stack-bar" role="img" aria-label="Laravel 80%, DB/Perf 20%">
+              <div class="year-stack-seg" style="--pct:80; --c:0" data-label="Laravel">
+                <span>Laravel</span><span>80%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:29; --c:3" data-label="DB/Perf">
+                <span>DB/Perf</span><span>20%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 5: Year 06 ────────────────────────────────────── -->
+      <section class="section" id="year-5" data-depth="2000" aria-labelledby="year5-title">
+        <div class="content reveal">
+          <p class="depth-tag">-2000M / YEAR 06</p>
+          <h2 id="year5-title">30名の構成管理と、チームの再建。</h2>
+
+          <div class="year-topics" aria-label="6年目のトピック">
+            <article class="year-topic">
+              <h3>構成管理責任者</h3>
+              <p>
+                30名規模案件でGit Flow策定・PR全件レビュー・デプロイ管理を統括。
+                7ヶ月400回デプロイ、重大障害ゼロ。
+              </p>
+            </article>
+            <article class="year-topic">
+              <h3>チームの再建</h3>
+              <p>
+                離職・メンタル不調が続く5名チームを再建。
+                SL理論に基づく個別育成で全員自走体制を確立。
+                離職・体調不良・日報漏れゼロ。
+              </p>
+            </article>
+            <article class="year-topic">
+              <h3>技術資産化</h3>
+              <p>
+                C#製ソケット中継サーバーを解析しDocker(Ubuntu)環境へ移植。
+                AIによるフローチャート自動生成でオンボーディングコストを劇的削減。
+                静的解析導入とCI/CD改善。ベトナムベンダーへの技術移譲と開発規約整備。
+              </p>
+            </article>
+          </div>
+
+          <div class="year-stack" data-year="5" aria-label="スキル比率">
+            <div class="year-stack-bar" role="img" aria-label="Laravel 50%, Lead 30%, AI 20%">
+              <div class="year-stack-seg" style="--pct:50; --c:0" data-label="Laravel">
+                <span>Laravel</span><span>50%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:30; --c:3" data-label="Lead">
+                <span>Lead</span><span>30%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:19; --c:1" data-label="AI">
+                <span>AI</span><span>20%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 6: Year 07 ────────────────────────────────────── -->
+      <section class="section" id="year-6" data-depth="2800" aria-labelledby="year6-title">
+        <div class="content reveal">
+          <p class="depth-tag">-2800M / YEAR 07</p>
+          <h2 id="year6-title">スクラムとAIで、開発の速度域を変える。</h2>
+
+          <div class="year-topics" aria-label="7年目のトピック">
+            <article class="year-topic">
+              <h3>スクラム初期構築</h3>
+              <p>
+                オフショアチームを巻き込んだアジャイル運営基盤をゼロ構築。
+                インセプションデッキ、ユーザーストーリーマッピング、ベロシティ計測の土台確立。
+              </p>
+            </article>
+            <article class="year-topic">
+              <h3>AI駆動開発の標準化</h3>
+              <p>
+                要件→実装→PR作成までのオーケストレーション構築。
+                生成AIベースのQ&amp;Aツール自作でベトナム側Q&amp;A工数を1日1時間→5分に削減。
+                GitHub Actionsによる完全CI/CD構築で手動デプロイを100%削減。
+              </p>
+            </article>
+            <article class="year-topic">
+              <h3>フルサイクルAI開発</h3>
+              <p>
+                AIが自律的に開発プラン→実装→動作検証→Git push→PR作成を一気通貫実行。
+                ハーネスエンジニアリングでバグ率最小化。DoD準拠スモークテスト戦略。
+              </p>
+            </article>
+          </div>
+
+          <div class="year-stack" data-year="6" aria-label="スキル比率">
+            <div class="year-stack-bar" role="img" aria-label="Laravel 40%, AI 35%, Lead 25%">
+              <div class="year-stack-seg" style="--pct:40; --c:0" data-label="Laravel">
+                <span>Laravel</span><span>40%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:35; --c:1" data-label="AI">
+                <span>AI</span><span>35%</span>
+              </div>
+              <div class="year-stack-seg" style="--pct:25; --c:3" data-label="Lead">
+                <span>Lead</span><span>25%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer: Contact ──────────────────────────────────────── -->
+      <section class="section" id="contact-history" data-depth="3000" aria-labelledby="contact-history-title">
+        <div class="content reveal">
+          <p class="depth-tag">-3000M</p>
+          <h2 id="contact-history-title">ここまでが、いまの自分。</h2>
+          <p>7年分を読んでくれた人と、きっといい仕事ができる。</p>
+
+          <nav class="links" aria-label="ページリンク">
+            <a href="./index.html" class="back-link" aria-label="ポートフォリオトップへ戻る">← PORTFOLIO</a>
+            <a href="https://qiita.com/dialog-riku" target="_blank" rel="noreferrer">QIITA</a>
+            <span aria-disabled="true">GITHUB / 準備中</span>
+            <span aria-disabled="true">X / 準備中</span>
+          </nav>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="./js/script.js?v=hist"></script>
+    <script>
+      // year-stack アニメーション
+      document.querySelectorAll('.year-stack-seg').forEach(el => {
+        el.classList.add('before-animate');
+      });
+      const stackObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll('.year-stack-seg').forEach(seg => {
+              seg.classList.remove('before-animate');
+            });
+            stackObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+      document.querySelectorAll('.year-stack').forEach(el => stackObs.observe(el));
+    </script>
+  </body>
+</html>

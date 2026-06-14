@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="./styles.css?v=sky">
+    <link rel="stylesheet" href="./style/styles.css?v=sky">
   </head>
   <body>
     <canvas id="marine-snow" aria-hidden="true"></canvas>
@@ -102,38 +102,28 @@
           <div class="instrument-panel" aria-label="専門領域">
 
             <div class="gauges" role="tablist" aria-label="専門領域を選択">
-              <button class="gauge-item is-active" role="tab" aria-selected="true" aria-controls="panel-laravel" data-panel="laravel">
-                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
-                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
-                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="55"/>
+              <div class="donut-wrap">
+                <svg class="donut-chart" viewBox="0 0 160 160" aria-hidden="true">
+                  <!-- LARAVEL 55% -->
+                  <circle class="donut-seg" data-panel="laravel" cx="80" cy="80" r="56" data-value="55" data-offset="0"/>
+                  <!-- AI 20% -->
+                  <circle class="donut-seg" data-panel="ai" cx="80" cy="80" r="56" data-value="20" data-offset="55"/>
+                  <!-- DESIGN 10% -->
+                  <circle class="donut-seg" data-panel="design" cx="80" cy="80" r="56" data-value="10" data-offset="75"/>
+                  <!-- LEAD 15% -->
+                  <circle class="donut-seg" data-panel="lead" cx="80" cy="80" r="56" data-value="15" data-offset="85"/>
                 </svg>
-                <span class="gauge-value">55%</span>
-                <span class="gauge-label">LARAVEL</span>
-              </button>
-              <button class="gauge-item" role="tab" aria-selected="false" aria-controls="panel-ai" data-panel="ai">
-                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
-                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
-                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="20"/>
-                </svg>
-                <span class="gauge-value">20%</span>
-                <span class="gauge-label">AI</span>
-              </button>
-              <button class="gauge-item" role="tab" aria-selected="false" aria-controls="panel-design" data-panel="design">
-                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
-                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
-                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="10"/>
-                </svg>
-                <span class="gauge-value">10%</span>
-                <span class="gauge-label">DESIGN</span>
-              </button>
-              <button class="gauge-item" role="tab" aria-selected="false" aria-controls="panel-lead" data-panel="lead">
-                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
-                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
-                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="15"/>
-                </svg>
-                <span class="gauge-value">15%</span>
-                <span class="gauge-label">LEAD</span>
-              </button>
+                <div class="donut-center" aria-live="polite">
+                  <span class="donut-pct">55%</span>
+                  <span class="donut-name">LARAVEL</span>
+                </div>
+              </div>
+              <div class="donut-legend">
+                <button class="legend-item is-active" data-panel="laravel" role="tab" aria-selected="true"  aria-controls="panel-laravel"><span class="legend-dot" style="--c:0"></span>LARAVEL<span class="legend-pct">55%</span></button>
+                <button class="legend-item"            data-panel="ai"      role="tab" aria-selected="false" aria-controls="panel-ai">     <span class="legend-dot" style="--c:1"></span>AI<span class="legend-pct">20%</span></button>
+                <button class="legend-item"            data-panel="design"  role="tab" aria-selected="false" aria-controls="panel-design">  <span class="legend-dot" style="--c:2"></span>DESIGN<span class="legend-pct">10%</span></button>
+                <button class="legend-item"            data-panel="lead"    role="tab" aria-selected="false" aria-controls="panel-lead">    <span class="legend-dot" style="--c:3"></span>LEAD<span class="legend-pct">15%</span></button>
+              </div>
             </div>
 
             <div class="gauge-panels">
@@ -380,6 +370,7 @@
             設計の相談、執筆や登壇の依頼、カジュアルな技術談義まで。深海から、返事します。
           </p>
           <nav class="links" aria-label="連絡先リンク">
+            <a href="./history.html">CAREER LOG</a>
             <span aria-disabled="true">EMAIL / 準備中</span>
             <a href="https://qiita.com/dialog-riku" target="_blank" rel="noreferrer">QIITA</a>
             <span aria-disabled="true">GITHUB / 準備中</span>
@@ -389,6 +380,6 @@
       </section>
     </main>
 
-    <script src="./script.js?v=sky"></script>
+    <script src="./js/script.js?v=sky"></script>
   </body>
 </html>
