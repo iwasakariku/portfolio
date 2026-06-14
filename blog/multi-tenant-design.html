@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K39FHRSS');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="マルチテナントSaaSにおけるデータ分離方式の選定基準と、Laravel Eloquentグローバルスコープを用いた論理分離の確実な実装設計。"
+    >
+    <link rel="icon" href="../img/favicon.ico">
+    <title>マルチテナントSaaSにおけるデータ分離設計 — TECH LOG — 陸駆 Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="../style/styles.css?v=post">
+    <link rel="stylesheet" href="../style/blog.css?v=post">
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K39FHRSS"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <canvas id="marine-snow" aria-hidden="true"></canvas>
+    <div class="sun-rays" aria-hidden="true"></div>
+
+    <aside class="dive-meter" aria-label="現在の深度">
+      <div class="meter-readout">
+        <span class="meter-label">DEPTH</span>
+        <span id="depth-value">0000m</span>
+      </div>
+      <div class="meter-track" aria-hidden="true">
+        <div class="meter-ticks"></div>
+        <div id="depth-marker" class="depth-marker"></div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- ── Section 0: Hero ──────────────────────────────────────── -->
+      <section class="section hero" id="surface" data-depth="0" aria-labelledby="post-title">
+        <div class="content hero-content reveal">
+          <div class="post-header">
+            <div class="post-meta">
+              <span class="post-tag">ARCHITECTURE</span>
+              <span class="post-depth">DEPTH: -1200M</span>
+              <span>2026.05.28</span>
+            </div>
+            <h1 id="post-title">マルチテナントSaaSにおけるデータ分離設計と境界定義</h1>
+          </div>
+          <p class="lead">
+            B2B SaaSの開発において、最もクリティカルな要件の一つが「テナント間の確実なデータ分離」です。
+            運用コストを抑えつつ、絶対にデータ流出を起こさないための実装設計アプローチについて解説します。
+          </p>
+          <a class="dive-cue" href="#part-1" aria-label="詳細へ進む">
+            <span>READ MORE ↓</span>
+            <i aria-hidden="true"></i>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── Section 1: DB Isolation ──────────────────────────────── -->
+      <section class="section" id="part-1" data-depth="1000" aria-labelledby="section-title-1">
+        <div class="content reveal">
+          <p class="depth-tag">-1000M / PART 01</p>
+          <h2 id="section-title-1">データ分離のトレードオフ：物理分離 vs 論理分離</h2>
+          <p>
+            マルチテナントにおけるデータ分離の手法は、大きく「物理分離（テナントごとにデータベースを分ける）」と「論理分離（共有データベース内の各レコードにテナントIDを持つ）」に分かれます。
+          </p>
+          <p>
+            物理分離は、インフラレイヤーで接続が隔離されるためデータ混入リスクが低いというメリットがあります。
+            しかし一方で、数千・数万テナントにスケールした際のデータベース管理コスト、スキーマ一斉アップデートの難易度、およびコスト効率の面で大きなトレードオフを抱えることになります。
+          </p>
+          <p>
+            物流現場で使われるB2B SaaSのように、大量のトランザクションが走るシステムでは、スキーマ変更の柔軟性とコスト最適化を考慮し、<strong>共有DBを用いた「論理分離」</strong>を採用しつつ、いかにアプリケーション境界でミスを防ぐかが鍵になります。
+          </p>
+        </div>
+      </section>
+
+      <!-- ── Section 2: Scoping ───────────────────────────────────── -->
+      <section class="section" id="part-2" data-depth="2000" aria-labelledby="section-title-2">
+        <div class="content reveal">
+          <p class="depth-tag">-1200M / PART 02</p>
+          <h2 id="section-title-2">境界の実装：Laravel グローバルスコープの活用</h2>
+          <p>
+            論理分離における最大の脅威は、「SQLのWHERE句に `tenant_id` を書き忘れる」という人為的ミスです。
+            これを防ぐため、フレームワークレベルでクエリ発行時に自動でフィルタリングが適用される「グローバルスコープ」を構築します。
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-lang">PHP (Laravel)</span>
+              <button class="code-copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText).then(() => { this.textContent = 'COPIED'; setTimeout(() => this.textContent = 'COPY', 2000) })">COPY</button>
+            </div>
+            <pre class="code-body"><code><span class="c-keyword">trait</span> BelongsToTenant
+{
+    <span class="c-keyword">public static function</span> <span class="c-function">bootBelongsToTenant</span>()
+    {
+        <span class="c-comment">// モデル作成時に自動でカレントテナントIDを設定</span>
+        <span class="c-keyword">static</span>::creating(<span class="c-keyword">function</span> (<span class="c-variable">$model</span>) {
+            <span class="c-keyword">if</span> (!<span class="c-variable">$model</span>-&gt;tenant_id) {
+                <span class="c-variable">$model</span>-&gt;tenant_id = CurrentTenant::id();
+            }
+        });
+
+        <span class="c-comment">// クエリ検索時に自動で tenant_id フィルタを付与</span>
+        <span class="c-keyword">static</span>::addGlobalScope(<span class="c-keyword">new</span> TenantScope);
+    }
+}</code></pre>
+          </div>
+
+          <p>
+            このトレイトを各ドメインモデルに付与することで、開発者がSQLを意識せずとも、自動的に所属テナントのデータだけにアクセスできるガードレールが形成されます。
+          </p>
+
+          <div class="diagram-container">
+            <div class="diagram-title">TENANT ISOLATION WORKFLOW</div>
+            <div class="tenant-diagram">
+              <div class="diagram-node">Client HTTP Request</div>
+              <div class="diagram-arrow"></div>
+              <div class="diagram-node highlight-blue">TenantMiddleware (Set Current Tenant ID)</div>
+              <div class="diagram-arrow"></div>
+              <div class="diagram-node highlight-purple">TenantScope (Appends Tenant ID to SQL WHERE)</div>
+              <div class="diagram-arrow"></div>
+              <div class="diagram-node">Database query (Filtered & Secure)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: Verification ──────────────────────────────── -->
+      <section class="section" id="part-3" data-depth="3000" aria-labelledby="section-title-3">
+        <div class="content reveal">
+          <p class="depth-tag">-1500M / PART 03</p>
+          <h2 id="section-title-3">二重のセキュリティ：インフラと自動検証</h2>
+          <p>
+            しかし、グローバルスコープだけに頼るのも危険です。
+            たとえば、「スコープ無効化メソッド（`withoutGlobalScopes`）」を特定の管理者用機能で使った際に、意図せず他の機能にデータ漏洩が漏れ出す脆弱性が作り込まれる可能性があります。
+          </p>
+          <p>
+            そのため、<strong>二重の防御ライン</strong>を設計します。
+          </p>
+          <p>
+            1つ目は、コントローラーやポリシー層での明示的なアクセス制御（ゲートキーパー）。
+            2つ目は、CI/CDで必ず回る「テナント間クロスアクセス制限テスト」です。
+            ダミーテナントを複数作成し、テナントAの認証トークンを用いたAPIリクエストが、絶対にテナントBのデータを参照・変更できず、一律で403/404エラーになることを自動テストで徹底的に保証しています。
+          </p>
+          <p>
+            「数年後の自分が泣かないために、依存を最小化し、変えやすいコードを書き続ける」。
+            マルチテナント設計は、まさにその思想が試されるコア領域と言えます。
+          </p>
+
+          <nav class="links" aria-label="ページリンク">
+            <a href="../blog.html" class="back-link">← TECH LOG</a>
+            <a href="../index.html">PORTFOLIO</a>
+            <a href="https://qiita.com/dialog-riku" target="_blank" rel="noreferrer">QIITA</a>
+          </nav>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="../js/script.js?v=post"></script>
+  </body>
+</html>

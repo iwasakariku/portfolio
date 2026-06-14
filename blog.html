@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K39FHRSS');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="陸駆の技術ブログ。サーバーサイド設計、データベース最適化、AI駆動開発の実践記録。"
+    >
+    <link rel="icon" href="img/favicon.ico">
+    <title>TECH LOG — 陸駆 Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="./style/styles.css?v=blog">
+    <link rel="stylesheet" href="./style/blog.css?v=blog">
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K39FHRSS"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <canvas id="marine-snow" aria-hidden="true"></canvas>
+    <div class="sun-rays" aria-hidden="true"></div>
+
+    <aside class="dive-meter" aria-label="現在の深度">
+      <div class="meter-readout">
+        <span class="meter-label">DEPTH</span>
+        <span id="depth-value">0000m</span>
+      </div>
+      <div class="meter-track" aria-hidden="true">
+        <div class="meter-ticks"></div>
+        <div id="depth-marker" class="depth-marker"></div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- ── Section 0: Hero ──────────────────────────────────────── -->
+      <section class="section hero" id="surface" data-depth="0" aria-labelledby="blog-title">
+        <div class="content hero-content reveal">
+          <p class="kicker">TECH LOG / 0000M</p>
+          <h1 id="blog-title">思考と技術の深層。</h1>
+          <p class="blog-hero-sub">RIKU IWASAKA — TECH LOG</p>
+          <p class="lead">
+            サーバーサイド、設計思想、AIとの協働について、深く掘り下げた記録。<br>
+            スクロールで潜るほど、ディープな内容になります。
+          </p>
+          <a class="dive-cue" href="#depth-shallow" aria-label="浅瀬へ進む">
+            <span>DIVE ↓</span>
+            <i aria-hidden="true"></i>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── Section 1: Epipelagic (-300m) ────────────────────────── -->
+      <section class="section" id="depth-shallow" data-depth="800" aria-labelledby="shallow-title">
+        <div class="content reveal">
+          <p class="depth-tag">-0300M / EPIPELAGIC ZONE</p>
+          <h2 id="shallow-title">有光層：プロセスと道具のレイヤー</h2>
+          <p>
+            海面からの光が届く浅瀬。
+            開発プロセスやAIとの協働など、日々の生産性やワークフローに直結する思考の記録。
+          </p>
+
+          <div class="blog-list">
+            <a href="./blog/ai-driven-refactoring.html" class="blog-card">
+              <div class="blog-card-meta">
+                <span class="blog-card-tag">AI / WORKFLOW</span>
+                <span class="blog-card-depth">DEPTH: -300M</span>
+                <span>2026.06.12</span>
+              </div>
+              <h3>AIと協働する開発プロセス：1週間で2万行をリファクタリングした手法</h3>
+              <p>
+                新規参画時のオンボーディングと並行して進めた約2万行のリファクタリング実務。
+                AIエージェントの特性を活かした提案サイクルと、人間側の検証ポリシー、そして事故を防ぐ自動化ガードレールについて解説します。
+              </p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 2: Mesopelagic (-1200m) ───────────────────────── -->
+      <section class="section" id="depth-mid" data-depth="1800" aria-labelledby="mid-title">
+        <div class="content reveal">
+          <p class="depth-tag">-1200M / MESOPELAGIC ZONE</p>
+          <h2 id="mid-title">中深層：設計と境界のレイヤー</h2>
+          <p>
+            光がかすれる薄暗い領域。
+            マルチテナント分離やドメイン境界の設計など、保守性と変更容易性のバランスを取るシステム設計の議論。
+          </p>
+
+          <div class="blog-list">
+            <a href="./blog/multi-tenant-design.html" class="blog-card">
+              <div class="blog-card-meta">
+                <span class="blog-card-tag">ARCHITECTURE</span>
+                <span class="blog-card-depth">DEPTH: -1200M</span>
+                <span>2026.05.28</span>
+              </div>
+              <h3>マルチテナントSaaSにおけるデータ分離設計と境界定義</h3>
+              <p>
+                エンタープライズ導入に不可欠なテナント間のデータ分離。
+                DB物理分離と論理分離のトレードオフを再考し、Laravelのグローバルスコープとオニオンアーキテクチャを用いた、安全かつ開発しやすい論理分離の実装パターンを紐解きます。
+              </p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: Bathypelagic (-2500m) ──────────────────────── -->
+      <section class="section" id="depth-deep" data-depth="2600" aria-labelledby="deep-title">
+        <div class="content reveal">
+          <p class="depth-tag">-2500M / BATHYPELAGIC ZONE</p>
+          <h2 id="deep-title">漸深層：データベースとトランザクションのレイヤー</h2>
+          <p>
+            一切の光が届かない暗黒。
+            InnoDBの内部挙動、デッドロックの解析、インデックス最適化など、深く潜るほど見えてくるシステムの深部トラブルシューティング。
+          </p>
+
+          <div class="blog-list">
+            <a href="./blog/mysql-deadlock-optimization.html" class="blog-card">
+              <div class="blog-card-meta">
+                <span class="blog-card-tag">DATABASE / PERF</span>
+                <span class="blog-card-depth">DEPTH: -2500M</span>
+                <span>2026.04.15</span>
+              </div>
+              <h3>MySQL (InnoDB) におけるデッドロック原因究明とインデックス最適化の実践</h3>
+              <p>
+                秒間8決済が稼働する物流B2B SaaSで発生したデッドロック障害。
+                `SHOW ENGINE INNODB STATUS` からGap LockとNext-Key Lockの競合関係を暴き出し、インデックス追加とクエリ順序の調整で完全に解消するまでの実録。
+              </p>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer: Navigation ───────────────────────────────────── -->
+      <section class="section" id="contact-blog" data-depth="3000" aria-labelledby="contact-blog-title">
+        <div class="content reveal">
+          <p class="depth-tag">-3000M</p>
+          <h2 id="contact-blog-title">さらに深い場所へ。</h2>
+          <p>
+            最後まで読んでいただき、ありがとうございます。<br>
+            技術の表層をなぞるだけではなく、常にその裏にある本質的な仕組みを意識して設計を行っています。<br>
+            もし記事への感想や、同じ領域での設計議論があればお気軽にどうぞ。
+          </p>
+
+          <nav class="links" aria-label="ページリンク">
+            <a href="./index.html" class="back-link" aria-label="ポートフォリオトップへ戻る">← PORTFOLIO</a>
+            <a href="./history.html">CAREER LOG</a>
+            <a href="https://qiita.com/dialog-riku" target="_blank" rel="noreferrer">QIITA</a>
+            <span aria-disabled="true">GITHUB / 準備中</span>
+            <span aria-disabled="true">X / 準備中</span>
+          </nav>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="./js/script.js?v=blog"></script>
+  </body>
+</html>

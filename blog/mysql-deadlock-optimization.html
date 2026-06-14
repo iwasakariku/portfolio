@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K39FHRSS');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="高並行トランザクション環境下で発生するMySQLデッドロックのログ解読から、InnoDBのロック機構に基づいたインデックス最適化による恒久対応までのエンジニアリング。"
+    >
+    <link rel="icon" href="../img/favicon.ico">
+    <title>MySQLデッドロック究明とインデックス最適化 — TECH LOG — 陸駆 Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="../style/styles.css?v=post">
+    <link rel="stylesheet" href="../style/blog.css?v=post">
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K39FHRSS"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <canvas id="marine-snow" aria-hidden="true"></canvas>
+    <div class="sun-rays" aria-hidden="true"></div>
+
+    <aside class="dive-meter" aria-label="現在の深度">
+      <div class="meter-readout">
+        <span class="meter-label">DEPTH</span>
+        <span id="depth-value">0000m</span>
+      </div>
+      <div class="meter-track" aria-hidden="true">
+        <div class="meter-ticks"></div>
+        <div id="depth-marker" class="depth-marker"></div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- ── Section 0: Hero ──────────────────────────────────────── -->
+      <section class="section hero" id="surface" data-depth="0" aria-labelledby="post-title">
+        <div class="content hero-content reveal">
+          <div class="post-header">
+            <div class="post-meta">
+              <span class="post-tag">DATABASE / PERF</span>
+              <span class="post-depth">DEPTH: -2500M</span>
+              <span>2026.04.15</span>
+            </div>
+            <h1 id="post-title">MySQL (InnoDB) におけるデッドロック原因究明とインデックス最適化の実践</h1>
+          </div>
+          <p class="lead">
+            秒間8決済が稼働する物流B2B SaaSで発生したデッドロック障害。
+            本番環境で実際に発生したロック競合のログを解読し、インデックス設計で解決した泥臭い戦いの記録です。
+          </p>
+          <a class="dive-cue" href="#part-1" aria-label="詳細へ進む">
+            <span>READ MORE ↓</span>
+            <i aria-hidden="true"></i>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── Section 1: Deadlock ──────────────────────────────────── -->
+      <section class="section" id="part-1" data-depth="1000" aria-labelledby="section-title-1">
+        <div class="content reveal">
+          <p class="depth-tag">-2000M / PART 01</p>
+          <h2 id="section-title-1">デッドロック発生：高並行の臨界点</h2>
+          <p>
+            物流の出荷指示データは膨大です。荷主からのデータ送信や倉庫からの出荷確定が、ある時間帯に一斉にトランザクションとして走ります。
+            ある日、特定商品の在庫引き当て（Allocation）を行う処理で、デッドロックエラーが本番環境で頻発するようになりました。
+          </p>
+          <p>
+            不具合件数そのものは数%でしたが、物流が止まりかねないコアの引き当て処理であるため、最優先での原因究明が必要となりました。
+            アプリケーションのコードを見ただけでは競合箇所がわからず、データベース内部の「ロックの取得順序」まで深く潜る必要がありました。
+          </p>
+          <blockquote>
+            <p>
+              「表面からは見えない、システム境界の歪みと向き合う。」<br>
+              これこそが、サーバーサイドエンジニアの主戦場です。
+            </p>
+          </blockquote>
+        </div>
+      </section>
+
+      <!-- ── Section 2: Log analysis ──────────────────────────────── -->
+      <section class="section" id="part-2" data-depth="2000" aria-labelledby="section-title-2">
+        <div class="content reveal">
+          <p class="depth-tag">-2500M / PART 02</p>
+          <h2 id="section-title-2">ログ解読：InnoDBのロック挙動（Gap Lock, Next-key Lock）</h2>
+          <p>
+            原因を特定するため、MySQLで `SHOW ENGINE INNODB STATUS` コマンドを実行し、最新のデッドロックログを抽出しました。
+            ログの中身を辿ると、一見関係なさそうな2つの別レコードに対する `SELECT ... FOR UPDATE` と `INSERT` が、お互いにロック解除を待ち合っている状態でした。
+          </p>
+          <p>
+            原因は、検索クエリがテーブルをフルスキャンした結果、存在しない範囲（ギャップ）にまでロックが及ぶ「Gap Lock（ギャップロック）」および「Next-Key Lock」でした。
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-lang">SQL</span>
+              <button class="code-copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText).then(() => { this.textContent = 'COPIED'; setTimeout(() => this.textContent = 'COPY', 2000) })">COPY</button>
+            </div>
+            <pre class="code-body"><code><span class="c-comment">-- デッドロックの引き金となった範囲検索のロッククエリ</span>
+<span class="c-keyword">SELECT</span> * <span class="c-keyword">FROM</span> stock_allocations 
+<span class="c-keyword">WHERE</span> tenant_id = <span class="c-number">5</span> 
+  <span class="c-keyword">AND</span> status = <span class="c-string">'pending'</span> 
+  <span class="c-keyword">AND</span> sku = <span class="c-string">'SKU-882'</span> 
+<span class="c-keyword">FOR UPDATE</span>;</code></pre>
+          </div>
+
+          <p>
+            このクエリを実行した際、<code>(tenant_id, status, sku)</code> に適切な複合インデックスが存在しなかったため、MySQLはテーブルスキャンに近いロック範囲を選択し、並行実行された別のインサートクエリ（挿入インテンションロック）とデッドロックを引き起こしていました。
+          </p>
+
+          <div class="diagram-container">
+            <div class="diagram-title">TRANSACTION DEADLOCK RELATION</div>
+            <div class="lock-diagram">
+              <div class="lock-tx">
+                <h4>TRANSACTION A</h4>
+                <p>SELECT ... FOR UPDATE<br>(Requires Gap Lock on SKU range)</p>
+              </div>
+              <div class="lock-relation">
+                <span>MUTUAL WAIT</span>
+                <div class="lock-line"></div>
+              </div>
+              <div class="lock-tx waiting">
+                <h4>TRANSACTION B</h4>
+                <p>INSERT INTO stock_allocations<br>(Blocked by Transaction A's Gap Lock)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: Resolution ────────────────────────────────── -->
+      <section class="section" id="part-3" data-depth="3000" aria-labelledby="section-title-3">
+        <div class="content reveal">
+          <p class="depth-tag">-2800M / PART 03</p>
+          <h2 id="section-title-3">解決策：インデックス追加と更新順序の統制</h2>
+          <p>
+            対応として以下の2つのチューニングを行いました。
+          </p>
+          <p>
+            1. **複合インデックスの作成**<br>
+            <code>(tenant_id, status, sku)</code> の複合インデックスを追加しました。
+            これにより、`SELECT ... FOR UPDATE` がスキャンする範囲を厳密に対象の「特定の1レコード」に絞り込み、不要なギャップロックの発生を完全に抑え込みました。
+          </p>
+          <p>
+            2. **更新クエリの発行順序の統一**<br>
+            プログラム内でデータベースを更新する際、テーブルアクセス順序が「親テーブル（Orders）→ 子テーブル（OrderItems）」となるようトランザクション処理を一貫させ、ロック競合の発生確率を物理的に最小化しました。
+          </p>
+          <p>
+            この変更をデプロイした結果、本番環境でのデッドロック発生件数は<strong>完全にゼロ（0件）</strong>となり、高負荷時間帯の決済詰まりも解消されました。
+            「根性を仕組み（今回はインデックスとトランザクション規約）に置き換える」。
+            深い知識に基づいたシンプルな解決策こそが、本質的な最適化であると証明できた事例です。
+          </p>
+
+          <nav class="links" aria-label="ページリンク">
+            <a href="../blog.html" class="back-link">← TECH LOG</a>
+            <a href="../index.html">PORTFOLIO</a>
+            <a href="https://qiita.com/dialog-riku" target="_blank" rel="noreferrer">QIITA</a>
+          </nav>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="../js/script.js?v=post"></script>
+  </body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-K39FHRSS');</script>
+  <!-- End Google Tag Manager -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AIエージェントと人間が役割を分担し、1週間で2万行のリファクタリングを安全に完遂したプロセスとルール設計。">
+  <link rel="icon" href="../img/favicon.ico">
+  <title>AIと協働する開発プロセス — TECH LOG — 陸駆 Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../style/styles.css?v=post">
+  <link rel="stylesheet" href="../style/blog.css?v=post">
+</head>
+
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K39FHRSS" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <canvas id="marine-snow" aria-hidden="true"></canvas>
+  <div class="sun-rays" aria-hidden="true"></div>
+
+  <aside class="dive-meter" aria-label="現在の深度">
+    <div class="meter-readout">
+      <span class="meter-label">DEPTH</span>
+      <span id="depth-value">0000m</span>
+    </div>
+    <div class="meter-track" aria-hidden="true">
+      <div class="meter-ticks"></div>
+      <div id="depth-marker" class="depth-marker"></div>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ── Section 0: Hero ──────────────────────────────────────── -->
+    <section class="section hero" id="surface" data-depth="0" aria-labelledby="post-title">
+      <div class="content hero-content reveal">
+        <div class="post-header">
+          <div class="post-meta">
+            <span class="post-tag">AI / WORKFLOW</span>
+            <span class="post-depth">DEPTH: -300M</span>
+            <span>2026.06.12</span>
+          </div>
+          <h1 id="post-title">AIと協働する開発プロセス：1週間で2万行をリファクタリングした手法</h1>
+        </div>
+        <p class="lead">
+          新しくプロジェクトに参画した際、オンボーディングを兼ねて取り組んだ2万行のリファクタリング。
+          AIエージェントの処理能力を活かしつつ、どのように安全性と品質を両立させたか、その協働ルールをまとめます。
+        </p>
+        <a class="dive-cue" href="#part-1" aria-label="背景へ進む">
+          <span>READ MORE ↓</span>
+          <i aria-hidden="true"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Section 1: Background ────────────────────────────────── -->
+    <section class="section" id="part-1" data-depth="1000" aria-labelledby="section-title-1">
+      <div class="content reveal">
+        <p class="depth-tag">-0100M / PART 01</p>
+        <h2 id="section-title-1">背景：ドメイン・アーキテクチャの理解</h2>
+        <p>
+          1年ほどかけて作られたPoCコード。<br>
+          古いドキュメントが大量の中、MTGでPJの要点だけ伝えられる。<br>
+          コードや、雑多に書かれたマークダウンの山をただ読むだけのオンボーディングでは、動的な仕様変更や暗黙のルールを理解するのに限界がありました。
+        </p>
+        <p>
+          そこで実行したのが、onboardingディレクトリを作り、そこに自分が理解したコンテキストを整理する。
+          それが、リファクタリングタスク遂行の一番の近道でした。
+        </p>
+        <blockquote>
+          <p>
+            「手を動かすより、先に、全体を把握してから進める。」<br>
+            それは、AIを大規模に使う際にも全く同じ原則が適用されます。
+          </p>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- ── Section 2: Process ───────────────────────────────────── -->
+    <section class="section" id="part-2" data-depth="2000" aria-labelledby="section-title-2">
+      <div class="content reveal">
+        <p class="depth-tag">-0200M / PART 02</p>
+        <h2 id="section-title-2">プロセス：AIの推進力と人間のブレーキ</h2>
+        <p>
+          AIは高速にコードを生成できますが、放置すると「それっぽいけれど境界を跨ぐ依存関係」を作りがちです。
+          そのため、以下のような明確な<strong>協働プロセス</strong>を定めました。
+        </p>
+        <p>
+          まず、AIに「いきなりコードを書き換えさせない」こと。
+          最初に、変更すべきクラスの依存関係やドメイン構造を分析させ、人間が「リファクタリング計画」として承認します。
+          また承認できない計画を生み出したプロセスを徹底的に観測し、AIにフィードバックします。
+          そうすることで、同じ過ちを繰り返さないように学習させます。
+          次回以降はより手放しが効く、高いレベルのスキルと進化します。
+          承認された計画の範囲内でのみ、1モジュールずつコードを書き換えさせます。
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-lang">PHP (Pest)</span>
+            <button class="code-copy-btn"
+              onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText).then(() => { this.textContent = 'COPIED'; setTimeout(() => this.textContent = 'COPY', 2000) })">COPY</button>
+          </div>
+          <pre class="code-body"><code><span class="c-comment">// リファクタリング後の境界をテストで固定する例</span>
+<span class="c-keyword">test</span>(<span class="c-string">'inventory allocation respects tenant isolation'</span>, <span class="c-keyword">function</span> () {
+    <span class="c-variable">$tenantA</span> = Tenant::factory()-&gt;create();
+    <span class="c-variable">$tenantB</span> = Tenant::factory()-&gt;create();
+
+    <span class="c-comment">// テナントAのコンテキストで処理を実行</span>
+    Context::set(<span class="c-string">'tenant_id'</span>, <span class="c-variable">$tenantA</span>-&gt;id);
+    <span class="c-variable">$service</span> = app(AllocationService::<span class="c-keyword">class</span>);
+    
+    <span class="c-variable">$service</span>-&gt;allocateStock([
+        <span class="c-string">'sku'</span> =&gt; <span class="c-string">'ITEM-001'</span>,
+        <span class="c-string">'qty'</span> =&gt; <span class="c-number">10</span>
+    ]);
+
+    <span class="c-comment">// 他のテナントのデータベースに影響が出ていないことを検証</span>
+    expect(Stock::where(<span class="c-string">'tenant_id'</span>, <span class="c-variable">$tenantB</span>-&gt;id)-&gt;count())-&gt;toBe(<span class="c-number">0</span>);
+});</code></pre>
+        </div>
+
+        <p>
+          コード変更後は、直ちにテストを実行する。今回はまだまだUIがガッツリ変わることを想定して、手動によるスモークテストでした。
+          今までいくつものSaasシステムを開発してきた経験から、属人性はありますが、勘を働かせた観点に基づき、DoDを満たすように
+          レビューの焦点を絞りました。
+          つい、テストコードを書き足してしまいたくなる衝動にかられますが、トレードオフを明確にし流行りにとらわれず
+          本質を見失わない進め方の選択が重要です。
+        </p>
+      </div>
+    </section>
+
+    <!-- ── Section 3: Takeaways ─────────────────────────────────── -->
+    <section class="section" id="part-3" data-depth="3000" aria-labelledby="section-title-3">
+      <div class="content reveal">
+        <p class="depth-tag">-0300M / PART 03</p>
+        <h2 id="section-title-3">結果と教訓：仕組みが担保する安心感</h2>
+        <p>
+          結果として、1週間で計23,400行の不要コードおよび設計の整理を行い、
+          本番環境でのデプロイ後も<strong>不具合はゼロ</strong>でした。
+        </p>
+        <p>
+          この成果を支えたのは、AIを活用した高速な開発サイクルを回すための
+          <strong>「間違ったらその場で自ら止める仕組み」</strong>
+          と
+          <strong>「同じ過ちを繰り返さない為のプロセス」</strong>
+          が先に実装していたからです。
+          これが、AI時代におけるシステム開発の新しいスタンダードになると思いました。
+        </p>
+
+        <nav class="links" aria-label="ページリンク">
+          <a href="../blog.html" class="back-link">← TECH LOG</a>
+          <a href="../index.html">PORTFOLIO</a>
+          <a href="https://qiita.com/dialog-riku" target="_blank" rel="noreferrer">QIITA</a>
+        </nav>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../js/script.js?v=post"></script>
+</body>
+
+</html>
