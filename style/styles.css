@@ -958,3 +958,16 @@ body.is-in-sky .depth-marker {
     display: none;
   }
 }
+
+@keyframes hideOnScroll {
+  to {
+    opacity: 0;
+    visibility: hidden; /* クリックなどの干渉も防ぐ場合 */
+  }
+}
+
+.sky::after {
+  animation: hideOnScroll 0.2s linear forwards;
+  animation-timeline: scroll();
+  animation-range: 0px 200px; /* スクロールが0pxから200pxの間に非表示、以降もずっと非表示にする */
+}
