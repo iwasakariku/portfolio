@@ -7,14 +7,21 @@ const stops = [
   { at: 1, color: "#001233" },
 ];
 
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
 const depthValue = document.querySelector("#depth-value");
 const depthMarker = document.querySelector("#depth-marker");
 const sunRays = document.querySelector(".sun-rays");
 const ticks = document.querySelector(".meter-ticks");
 const track = document.querySelector(".meter-track");
+const surface = document.querySelector("#surface");
 const canvas = document.querySelector("#marine-snow");
 const ctx = canvas.getContext("2d");
+
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
 
 let ticking = false;
 let snowOpacity = 0;
@@ -40,22 +47,58 @@ function mixColor(progress) {
   const to = hexToRgb(end.color);
 
   return `rgb(${Math.round(from.r + (to.r - from.r) * local)}, ${Math.round(
-    from.g + (to.g - from.g) * local
+    from.g + (to.g - from.g) * local,
   )}, ${Math.round(from.b + (to.b - from.b) * local)})`;
 }
 
-function getProgress() {
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  return max <= 0 ? 0 : Math.min(window.scrollY / max, 1);
+function getScrollState() {
+  const skySection = document.querySelector("#sky");
+  const diveStart = surface ? surface.offsetTop : 0;
+  const maxDiveScroll =
+    document.documentElement.scrollHeight - window.innerHeight - diveStart;
+  const progress =
+    maxDiveScroll <= 0 ? 0 : (window.scrollY - diveStart) / maxDiveScroll;
+  const skyRatio =
+    diveStart <= 0 ? 0 : (diveStart - window.scrollY) / diveStart;
+
+  // sky セクション内の進行度（0=先頭, 1=末尾=海面直前）
+  // 最初の 1/2（3スクロール分）は完全静止、残り 1/2 で変化開始
+  let skyDescent = 0;
+  if (skySection) {
+    const skyHeight = skySection.offsetHeight;
+    const skyProgress = skyHeight > 0 ? window.scrollY / skyHeight : 0;
+    const deadZone = 0.5; // 先頭 50% = 3スクロール分は変化なし
+    skyDescent =
+      skyProgress <= deadZone
+        ? 0
+        : Math.min((skyProgress - deadZone) / (1 - deadZone), 1);
+    skySection.style.setProperty("--sky-descent", String(skyDescent));
+  }
+
+  return {
+    progress: Math.max(0, Math.min(progress, 1)),
+    skyRatio: Math.max(0, Math.min(skyRatio, 1)),
+    skyDescent,
+  };
 }
 
 function updateDepth() {
-  const progress = getProgress();
+  const { progress, skyRatio, skyDescent } = getScrollState();
   const depth = Math.round(progress * 3000);
+  // ALT は sky 先頭で 120m、descent が進むにつれ 0m へ降下
+  const skyAltitude = Math.round((1 - skyDescent) * 120);
   const trackHeight = track.getBoundingClientRect().height;
 
   document.body.style.backgroundColor = mixColor(progress);
-  depthValue.textContent = `${String(depth).padStart(4, "0")}m`;
+  document.body.classList.toggle("is-in-sky", skyRatio > 0.08);
+  const isInSky = skyRatio > 0.04;
+  document.querySelector(".meter-label").textContent = isInSky
+    ? "ALT"
+    : "DEPTH";
+
+  depthValue.textContent = isInSky
+    ? `↑${String(skyAltitude).padStart(4, "0")}m`
+    : `${String(depth).padStart(4, "0")}m`;
   depthMarker.style.top = `${progress * trackHeight}px`;
   sunRays.style.opacity = String(Math.max(0, 1 - progress * 4.8));
   snowOpacity = Math.max(0, Math.min(1, (depth - 500) / 950));
@@ -92,14 +135,17 @@ function resizeCanvas() {
   canvas.style.height = `${height}px`;
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-  particles = Array.from({ length: Math.min(90, Math.floor(width / 16)) }, () => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    r: Math.random() * 1.8 + 0.4,
-    speed: Math.random() * 0.42 + 0.12,
-    drift: Math.random() * 0.42 - 0.21,
-    phase: Math.random() * Math.PI * 2,
-  }));
+  particles = Array.from(
+    { length: Math.min(90, Math.floor(width / 16)) },
+    () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: Math.random() * 1.8 + 0.4,
+      speed: Math.random() * 0.42 + 0.12,
+      drift: Math.random() * 0.42 - 0.21,
+      phase: Math.random() * Math.PI * 2,
+    }),
+  );
 }
 
 function drawSnow(time = 0) {
@@ -109,7 +155,8 @@ function drawSnow(time = 0) {
     ctx.globalAlpha = snowOpacity;
     particles.forEach((particle) => {
       particle.y += particle.speed;
-      particle.x += particle.drift + Math.sin(time / 1400 + particle.phase) * 0.12;
+      particle.x +=
+        particle.drift + Math.sin(time / 1400 + particle.phase) * 0.12;
 
       if (particle.y > height + 8) {
         particle.y = -8;
@@ -147,14 +194,47 @@ function setupReveal() {
         }
       });
     },
-    { threshold: 0.18 }
+    { threshold: 0.18 },
   );
 
-  document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+  document
+    .querySelectorAll(".reveal")
+    .forEach((element) => observer.observe(element));
+}
+
+function getHashTarget() {
+  const hash = window.location.hash.slice(1);
+  return hash ? document.getElementById(hash) : null;
+}
+
+function setupInitialPosition() {
+  if (!surface || getHashTarget()) return;
+
+  if (window.location.hash) {
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`,
+    );
+  }
+
+  const jumpToSurface = () => {
+    const originalScrollBehavior =
+      document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, surface.offsetTop);
+    document.documentElement.style.scrollBehavior = originalScrollBehavior;
+    updateDepth();
+  };
+
+  jumpToSurface();
+  window.requestAnimationFrame(jumpToSurface);
+  window.addEventListener("load", jumpToSurface, { once: true });
 }
 
 createTicks();
 resizeCanvas();
+setupInitialPosition();
 setupReveal();
 updateDepth();
 
