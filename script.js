@@ -162,10 +162,51 @@ function drawSnow(time = 0) {
   window.requestAnimationFrame(drawSnow);
 }
 
+function animateInstruments(container) {
+  const CIRCUMFERENCE = 2 * Math.PI * 32; // ≈ 201.06
+
+  // 円形ゲージ
+  container.querySelectorAll(".gauge-fill[data-value]").forEach((el) => {
+    const value = parseFloat(el.dataset.value) / 100;
+    el.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - value));
+  });
+}
+
+function setupGaugeTabs() {
+  document.querySelectorAll(".gauges[role='tablist']").forEach((tablist) => {
+    tablist.addEventListener("click", (e) => {
+      const btn = e.target.closest(".gauge-item[data-panel]");
+      if (!btn) return;
+
+      // タブ切り替え
+      tablist.querySelectorAll(".gauge-item").forEach((b) => {
+        b.classList.remove("is-active");
+        b.setAttribute("aria-selected", "false");
+      });
+      btn.classList.add("is-active");
+      btn.setAttribute("aria-selected", "true");
+
+      // パネル切り替え
+      const panelId = "panel-" + btn.dataset.panel;
+      const container = tablist.closest(".instrument-panel");
+      container.querySelectorAll(".gauge-panel").forEach((p) => {
+        p.classList.remove("is-active");
+        p.hidden = true;
+      });
+      const target = document.getElementById(panelId);
+      if (target) {
+        target.classList.add("is-active");
+        target.hidden = false;
+      }
+    });
+  });
+}
+
 function setupReveal() {
   if (prefersReducedMotion) {
     document.querySelectorAll(".reveal").forEach((element) => {
       element.classList.add("is-visible");
+      animateInstruments(element);
     });
     return;
   }
@@ -175,6 +216,10 @@ function setupReveal() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
+          // 計器パネルがある場合はアニメーション開始
+          if (entry.target.querySelector(".instrument-panel")) {
+            animateInstruments(entry.target);
+          }
           observer.unobserve(entry.target);
         }
       });
@@ -385,6 +430,7 @@ createTicks();
 resizeCanvas();
 setupInitialPosition();
 setupSkyOverlay();
+setupGaugeTabs();
 setupReveal();
 updateDepth();
 

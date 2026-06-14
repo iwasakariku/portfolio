@@ -452,6 +452,201 @@ body.is-in-sky .depth-marker {
   transform: translate(-4px, -4px);
 }
 
+/* ── Instrument panel (2セクション目) ───────────────────────────── */
+
+.about-content {
+  width: min(860px, 100%);
+}
+
+.instrument-panel {
+  margin: 2.4rem 0 2rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+/* ゲージ行（タブリスト） */
+.gauges {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+
+.gauge-item {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 20px 12px 16px;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--line);
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gauge-item:last-child {
+  border-right: none;
+}
+
+.gauge-item:hover {
+  background: rgba(234, 241, 248, 0.04);
+}
+
+.gauge-item.is-active {
+  background: rgba(94, 188, 255, 0.07);
+}
+
+.gauge-ring {
+  width: 72px;
+  height: 72px;
+  transform: rotate(-90deg);
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: rgba(234, 241, 248, 0.14);
+  stroke-width: 5;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke: rgba(94, 188, 255, 0.45);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 201.06;
+  stroke-dashoffset: 201.06;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gauge-item.is-active .gauge-fill {
+  stroke: rgba(94, 188, 255, 1);
+}
+
+.gauge-value {
+  position: absolute;
+  top: calc(20px + 36px - 9px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.gauge-label {
+  color: var(--muted-4);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+}
+
+.gauge-item.is-active .gauge-label {
+  color: rgba(94, 188, 255, 0.9);
+}
+
+/* 詳細パネル */
+.gauge-panels {
+  padding: 24px 28px 28px;
+}
+
+.gauge-panel {
+  display: none;
+}
+
+.gauge-panel.is-active {
+  display: block;
+  animation: panel-in 0.3s ease;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gauge-panel-title {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  max-width: none;
+}
+
+.gauge-panel-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.gauge-panel-list li {
+  padding-left: 16px;
+  position: relative;
+  color: var(--ink-body);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.gauge-panel-list li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: rgba(94, 188, 255, 0.55);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  top: 2px;
+}
+
+.gauge-panel-chips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gauge-panel-chips li {
+  border: 1px solid rgba(94, 188, 255, 0.28);
+  padding: 4px 10px;
+  color: rgba(94, 188, 255, 0.75);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 720px) {
+  .gauges {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gauge-item:nth-child(2) {
+    border-right: none;
+  }
+
+  .gauge-item:nth-child(1),
+  .gauge-item:nth-child(2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .gauge-panels {
+    padding: 20px;
+  }
+}
+
+/* ── /Instrument panel ───────────────────────────────────────────── */
+
 .facts {
   margin: 0.25rem 0 0;
   border-top: 1px solid var(--line);

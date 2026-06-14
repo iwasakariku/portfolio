@@ -85,24 +85,118 @@
       </section>
 
       <section class="section" id="about" data-depth="200" aria-labelledby="about-title">
-        <div class="content split reveal">
-          <div>
-            <p class="depth-tag">-0200M / PHOTIC ZONE</p>
-            <h2 id="about-title">広く動いて、深く潜ることを選んだ。</h2>
-            <p>
-              最初の4年は、toCアプリ開発・イベント領域のDX・カスタマーサクセスまで横断。
-              ユーザーの声を直接受け止める立場を経て、いまの設計思想の原点ができました。
-              <strong>「システムに業務を寄せるのではなく、標準に業務を寄せる」</strong>
-            </p>
-            <p>
-              2024年からは物流ドメインのB2B SaaSへ。
-              サーバーサイドを軸に、エンタープライズ導入・レガシー移行・データ基盤まで。
-              やるべきことが、どんどん下の方にある。
-            </p>
+        <div class="content about-content reveal">
+          <p class="depth-tag">-0200M</p>
+          <h2 id="about-title">広く動いて、深く潜ることを選んだ。</h2>
+          <p>
+            最初の4年は、toCアプリ開発・イベント領域のDX・カスタマーサクセスまで横断。
+            ユーザーの声を直接受け止める立場を経て、いまの設計思想の原点ができました。
+            <strong>「システムに業務を寄せるのではなく、標準に業務を寄せる」</strong>
+          </p>
+          <p>
+            2024年からは物流ドメインのB2B SaaSへ。
+            サーバーサイドを軸に、エンタープライズ導入・レガシー移行・データ基盤まで。
+            やるべきことが、どんどん下の方にある。
+          </p>
+
+          <div class="instrument-panel" aria-label="専門領域">
+
+            <div class="gauges" role="tablist" aria-label="専門領域を選択">
+              <button class="gauge-item is-active" role="tab" aria-selected="true" aria-controls="panel-laravel" data-panel="laravel">
+                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="55"/>
+                </svg>
+                <span class="gauge-value">55%</span>
+                <span class="gauge-label">LARAVEL</span>
+              </button>
+              <button class="gauge-item" role="tab" aria-selected="false" aria-controls="panel-ai" data-panel="ai">
+                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="20"/>
+                </svg>
+                <span class="gauge-value">20%</span>
+                <span class="gauge-label">AI</span>
+              </button>
+              <button class="gauge-item" role="tab" aria-selected="false" aria-controls="panel-design" data-panel="design">
+                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="10"/>
+                </svg>
+                <span class="gauge-value">10%</span>
+                <span class="gauge-label">DESIGN</span>
+              </button>
+              <button class="gauge-item" role="tab" aria-selected="false" aria-controls="panel-lead" data-panel="lead">
+                <svg class="gauge-ring" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                  <circle class="gauge-fill" cx="40" cy="40" r="32" data-value="15"/>
+                </svg>
+                <span class="gauge-value">15%</span>
+                <span class="gauge-label">LEAD</span>
+              </button>
+            </div>
+
+            <div class="gauge-panels">
+
+              <div id="panel-laravel" class="gauge-panel is-active" role="tabpanel">
+                <p class="gauge-panel-title">PHP / Laravel — サーバーサイド全般</p>
+                <ul class="gauge-panel-list">
+                  <li>マルチテナントSaaSのAPI・バッチ設計と実装</li>
+                  <li>オニオンアーキテクチャを用いたドメイン層の設計</li>
+                  <li>MySQL / InnoDBのトランザクション・インデックス設計</li>
+                  <li>PestPHPによるユニット・フィーチャーテスト整備</li>
+                  <li>本番障害解析（デッドロック・ロック競合・性能劣化）</li>
+                </ul>
+                <ul class="gauge-panel-chips">
+                  <li>PHP 8.x</li><li>Laravel</li><li>MySQL</li><li>Redis</li><li>PestPHP</li><li>Docker</li>
+                </ul>
+              </div>
+
+              <div id="panel-ai" class="gauge-panel" role="tabpanel" hidden>
+                <p class="gauge-panel-title">AI駆動開発 — エージェント設計と運用</p>
+                <ul class="gauge-panel-list">
+                  <li>1週間・2万行規模のAIリファクタリング実施</li>
+                  <li>Kiro・Claudeを使ったエージェントスキル自作</li>
+                  <li>ブランチ作成〜コミットまでの自動化パイプライン構築</li>
+                  <li>SDLC全体へのAIエージェント組み込み設計</li>
+                  <li>社内AI活用推進タスクフォースのリード</li>
+                </ul>
+                <ul class="gauge-panel-chips">
+                  <li>Kiro</li><li>Claude</li><li>GitHub Actions</li><li>Prompt Engineering</li>
+                </ul>
+              </div>
+
+              <div id="panel-design" class="gauge-panel" role="tabpanel" hidden>
+                <p class="gauge-panel-title">システム設計 — 構造と境界を引く</p>
+                <ul class="gauge-panel-list">
+                  <li>Fit to Standard を軸とした導入設計</li>
+                  <li>マルチテナントのテナント分離・権限モデル設計</li>
+                  <li>AngularJS → React / Next.js の移行戦略設計</li>
+                  <li>Decision Docによる意思決定の構造化と合意形成</li>
+                </ul>
+                <ul class="gauge-panel-chips">
+                  <li>オニオンアーキテクチャ</li><li>DDD</li><li>ADR</li><li>Next.js</li>
+                </ul>
+              </div>
+
+              <div id="panel-lead" class="gauge-panel" role="tabpanel" hidden>
+                <p class="gauge-panel-title">テックリード — 仕組みで品質を担保する</p>
+                <ul class="gauge-panel-list">
+                  <li>最大30名規模プロジェクトの構成管理責任者</li>
+                  <li>7ヶ月400デプロイ・重大障害ゼロの運用設計</li>
+                  <li>CI/CDパイプラインの高度化とレビュープロセス設計</li>
+                  <li>オフショアチームへの技術移譲とガバナンス構築</li>
+                  <li>トレードオフのビジネス言語化とステークホルダー合意</li>
+                </ul>
+                <ul class="gauge-panel-chips">
+                  <li>GitHub Actions</li><li>Playwright</li><li>モノレポ</li><li>技術戦略</li>
+                </ul>
+              </div>
+
+            </div>
           </div>
+
           <dl class="facts" aria-label="基本情報">
-            <div><dt>NAME</dt><dd>Iwasaka Riku</dd></div>
-            <div><dt>ROLE</dt><dd>Tech Lead / Server-side</dd></div>
             <div><dt>CAREER</dt><dd>7年目（PHP/Laravel 6年）</dd></div>
             <div><dt>DOMAIN</dt><dd>物流 × B2B SaaS</dd></div>
             <div><dt>CERT</dt><dd>AWS SAA / 応用情報技術者</dd></div>
@@ -202,7 +296,7 @@
               <p class="work-index">04</p>
               <h3>データ基盤（ETL）の構築</h3>
               <p>
-                現在はデータ基盤領域へ。詳細は潜行中——浮上したら書く。
+                現在はデータ基盤領域へ。詳細は潜行中——浮上したら書きます。
               </p>
             </article>
           </div>
