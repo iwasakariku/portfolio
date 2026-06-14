@@ -18,6 +18,9 @@ const track = document.querySelector(".meter-track");
 const surface = document.querySelector("#surface");
 const canvas = document.querySelector("#marine-snow");
 const ctx = canvas.getContext("2d");
+const meterLabel = document.querySelector(".meter-label");
+const skyEl = document.querySelector("#sky");
+const skyContent = document.querySelector(".sky-content");
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -52,7 +55,6 @@ function mixColor(progress) {
 }
 
 function getScrollState() {
-  const skySection = document.querySelector("#sky");
   const diveStart = surface ? surface.offsetTop : 0;
   const maxDiveScroll =
     document.documentElement.scrollHeight - window.innerHeight - diveStart;
@@ -61,44 +63,27 @@ function getScrollState() {
   const skyRatio =
     diveStart <= 0 ? 0 : (diveStart - window.scrollY) / diveStart;
 
-  // sky セクション内の進行度（0=先頭, 1=末尾=海面直前）
-  // 最初の 1/2（3スクロール分）は完全静止、残り 1/2 で変化開始
-  let skyDescent = 0;
-  if (skySection) {
-    const skyHeight = skySection.offsetHeight;
-    const skyProgress = skyHeight > 0 ? window.scrollY / skyHeight : 0;
-    const deadZone = 0.5; // 先頭 50% = 3スクロール分は変化なし
-    skyDescent =
-      skyProgress <= deadZone
-        ? 0
-        : Math.min((skyProgress - deadZone) / (1 - deadZone), 1);
-    skySection.style.setProperty("--sky-descent", String(skyDescent));
-  }
-
   return {
     progress: Math.max(0, Math.min(progress, 1)),
     skyRatio: Math.max(0, Math.min(skyRatio, 1)),
-    skyDescent,
+    skyDescent: 0,
   };
 }
 
 function updateDepth() {
-  const { progress, skyRatio, skyDescent } = getScrollState();
+  const { progress } = getScrollState();
   const depth = Math.round(progress * 3000);
-  // ALT は sky 先頭で 120m、descent が進むにつれ 0m へ降下
-  const skyAltitude = Math.round((1 - skyDescent) * 120);
   const trackHeight = track.getBoundingClientRect().height;
 
   document.body.style.backgroundColor = mixColor(progress);
-  document.body.classList.toggle("is-in-sky", skyRatio > 0.08);
-  const isInSky = skyRatio > 0.04;
-  document.querySelector(".meter-label").textContent = isInSky
-    ? "ALT"
-    : "DEPTH";
 
-  depthValue.textContent = isInSky
-    ? `↑${String(skyAltitude).padStart(4, "0")}m`
-    : `${String(depth).padStart(4, "0")}m`;
+  // sky overlay が管理していない時だけ DEPTH 表示を更新
+  if (!skyActive && !skyFullyOpen) {
+    document.body.classList.remove("is-in-sky");
+    meterLabel.textContent = "DEPTH";
+    depthValue.textContent = `${String(depth).padStart(4, "0")}m`;
+  }
+
   depthMarker.style.top = `${progress * trackHeight}px`;
   sunRays.style.opacity = String(Math.max(0, 1 - progress * 4.8));
   snowOpacity = Math.max(0, Math.min(1, (depth - 500) / 950));
@@ -202,6 +187,170 @@ function setupReveal() {
     .forEach((element) => observer.observe(element));
 }
 
+// ─── Sky overlay control ─────────────────────────────────────────────────────
+// sky は fixed オーバーレイ。hero で上スクロールするとホイール量を蓄積し、
+// 段階的に sky が上から降りてくる演出をする。
+//
+// phase 0 (0–2 steps) : 静止。水色のまま。ALT ↑0m → ↑30m
+// phase 1 (2–3 steps) : 白いオーバーレイが浮き上がる。ALT ↑30m → ↑100m
+// phase 2 (3–4 steps) : sky コンテンツがフェードイン。ALT ↑100m → ↑120m
+// phase 3 (4–5 steps) : sky が完全に画面を覆い、snap で固定
+//
+// sky の translateY: step 0 = -100%, step 5 = 0%
+
+const SKY_STEPS = 5;
+const SKY_WHEEL_STEP = 200; // 1 step あたりのホイール量
+
+let skyStep = 0; // 0〜SKY_STEPS の連続値
+let skyActive = false; // hero で上スクロール中のホイールロック
+let skyFullyOpen = false; // sky が完全に開いた状態
+
+function setSkyStep(val) {
+  skyStep = Math.max(0, Math.min(SKY_STEPS, val));
+  renderSkyStep(skyStep);
+}
+function renderSkyStep(s) {
+  if (!skyEl) return;
+
+  // translateY: 0step = -100vh, 5step = 0
+  const translatePct = -100 + (s / SKY_STEPS) * 100;
+  skyEl.style.transform = `translateY(${translatePct}%)`;
+
+  // sky が画面を覆い始めたら is-in-sky を適用
+  const coverRatio = s / SKY_STEPS; // 0〜1
+  document.body.classList.toggle("is-in-sky", coverRatio > 0.6);
+  meterLabel.textContent = coverRatio > 0.2 ? "ALT" : "DEPTH";
+
+  // ALT 値: phase0(0–2) で 0→30, phase1(2–3) で 30→100, phase2(3–4) で 100→120
+  let alt = 0;
+  if (s <= 2) {
+    alt = Math.round((s / 2) * 30);
+  } else if (s <= 3) {
+    alt = Math.round(30 + (s - 2) * 70);
+  } else {
+    alt = Math.round(100 + (s - 3) * 20);
+  }
+  depthValue.textContent =
+    coverRatio > 0.2
+      ? `↑${String(alt).padStart(4, "0")}m`
+      : depthValue.textContent;
+
+  // sky コンテンツ: phase2(3–4) でフェードイン
+  if (skyContent) {
+    const contentProgress = Math.max(0, Math.min(s - 3, 1));
+    const eased =
+      contentProgress < 0.5
+        ? 2 * contentProgress * contentProgress
+        : 1 - Math.pow(-2 * contentProgress + 2, 2) / 2;
+    skyContent.style.opacity = String(eased);
+    skyContent.style.transform = `translateY(${(1 - eased) * 20}px)`;
+  }
+
+  // 完全に開いたら landing クラスを付与
+  skyFullyOpen = s >= SKY_STEPS;
+  skyEl.classList.toggle("is-landing", skyFullyOpen);
+}
+
+function setupSkyOverlay() {
+  if (!skyEl || prefersReducedMotion) {
+    // モーション無効時は sky を非表示にするだけ
+    if (skyEl) skyEl.style.display = "none";
+    return;
+  }
+
+  // 初期状態
+  skyEl.style.transform = "translateY(-100%)";
+  skyEl.style.transition = "none";
+  if (skyContent) {
+    skyContent.style.opacity = "0";
+    skyContent.style.transform = "translateY(20px)";
+  }
+
+  let isAtHeroTop = () => {
+    const heroEl = surface;
+    if (!heroEl) return false;
+    return Math.abs(window.scrollY - heroEl.offsetTop) < 4;
+  };
+
+  // ホイールイベント
+  window.addEventListener(
+    "wheel",
+    (e) => {
+      // sky が途中まで開いている or 完全に開いている → すべて横取り
+      if (skyActive || skyFullyOpen) {
+        e.preventDefault();
+
+        // 上スクロール（sky をさらに開く / 完全開放維持）
+        if (e.deltaY < 0) {
+          const newStep = skyStep - e.deltaY / SKY_WHEEL_STEP;
+          setSkyStep(Math.min(SKY_STEPS, newStep));
+          return;
+        }
+
+        // 下スクロール（sky を閉じる）
+        if (e.deltaY > 0) {
+          const newStep = skyStep - e.deltaY / SKY_WHEEL_STEP;
+          if (newStep <= 0) {
+            setSkyStep(0);
+            skyActive = false;
+          } else {
+            setSkyStep(newStep);
+          }
+          return;
+        }
+      }
+
+      // hero の先頭で上スクロール → sky を引き上げ始める
+      if (!skyActive && e.deltaY < 0 && isAtHeroTop()) {
+        e.preventDefault();
+        skyActive = true;
+        const newStep = skyStep - e.deltaY / SKY_WHEEL_STEP;
+        setSkyStep(Math.min(SKY_STEPS, newStep));
+        return;
+      }
+    },
+    { passive: false },
+  );
+
+  // タッチ対応
+  let touchStartY = 0;
+  window.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartY = e.touches[0].clientY;
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    "touchmove",
+    (e) => {
+      const deltaY = touchStartY - e.touches[0].clientY; // 上方向が正
+      touchStartY = e.touches[0].clientY;
+
+      // 上スワイプで sky を開き始める
+      if (!skyActive && deltaY < 0 && isAtHeroTop()) {
+        skyActive = true;
+      }
+
+      if (skyActive || skyFullyOpen) {
+        e.preventDefault();
+        // 上スワイプ(deltaY<0)で開く、下スワイプ(deltaY>0)で閉じる
+        const step = skyStep + -deltaY / (SKY_WHEEL_STEP * 0.7);
+        if (step >= SKY_STEPS) {
+          setSkyStep(SKY_STEPS);
+        } else if (step <= 0) {
+          setSkyStep(0);
+          skyActive = false;
+        } else {
+          setSkyStep(step);
+        }
+      }
+    },
+    { passive: false },
+  );
+}
+
 function getHashTarget() {
   const hash = window.location.hash.slice(1);
   return hash ? document.getElementById(hash) : null;
@@ -235,6 +384,7 @@ function setupInitialPosition() {
 createTicks();
 resizeCanvas();
 setupInitialPosition();
+setupSkyOverlay();
 setupReveal();
 updateDepth();
 

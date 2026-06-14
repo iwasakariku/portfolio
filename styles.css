@@ -119,10 +119,6 @@ main {
   align-items: center;
 }
 
-.section.sky {
-  align-items: start;
-}
-
 .content {
   width: min(760px, 100%);
 }
@@ -156,7 +152,6 @@ main {
   letter-spacing: 0.28em;
 }
 
-.sky,
 .hero {
   scroll-snap-align: start;
 }
@@ -166,16 +161,22 @@ main {
   --ink-body: rgba(16, 36, 58, 0.78);
   --ink-soft: rgba(16, 36, 58, 0.55);
   --line: rgba(16, 36, 58, 0.18);
-  position: relative;
-  z-index: 2;
-  min-height: 600svh;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  align-items: center;
+  padding: 14vh calc(12vw + var(--meter-width)) 14vh 10vw;
+  /* 初期状態：画面上に隠れている */
+  transform: translateY(-100%);
+  will-change: transform;
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(246, 251, 255, 0.96) 36%,
-      rgba(209, 233, 248, 0.9) 70%,
-      rgba(4, 102, 200, 0.08) 100%
+      rgba(255, 255, 255, 1) 0%,
+      rgba(246, 251, 255, 1) 50%,
+      rgba(209, 233, 248, 1) 80%,
+      rgba(160, 210, 248, 1) 100%
     ),
     linear-gradient(90deg, rgba(16, 36, 58, 0.05) 1px, transparent 1px),
     linear-gradient(180deg, rgba(16, 36, 58, 0.04) 1px, transparent 1px);
@@ -183,48 +184,43 @@ main {
     auto,
     112px 112px,
     112px 112px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
-.sky::before {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  content: "";
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(4, 102, 200, 0) 60%,
-    rgba(4, 102, 200, 0.18) 80%,
-    rgba(3, 83, 164, 0.42) 100%
-  );
-  opacity: var(--sky-descent, 0);
-  pointer-events: none;
-  transition: opacity 0.06s linear;
+/* sky が完全に表示された状態 */
+.sky.is-landing {
+  transform: translateY(0);
 }
 
+/* hero との境目グラデーション：sky の底辺に */
 .sky::after {
   position: absolute;
-  right: calc(10vw + var(--meter-width));
-  bottom: 9vh;
-  left: 10vw;
-  height: 1px;
+  right: 0;
+  bottom: -80px;
+  left: 0;
+  height: 80px;
   content: "";
+  overflow: visible;
   background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(16, 36, 58, 0.24),
-    transparent
+    180deg,
+    rgba(160, 210, 248, 0.85) 0%,
+    rgba(4, 102, 200, 0) 100%
   );
+  pointer-events: none;
 }
 
 .sky-content {
   width: min(900px, 100%);
-  position: sticky;
-  top: 14vh;
-  align-self: start;
   z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.sky-content.is-visible-sky {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .sky h2 {
