@@ -120,7 +120,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 3rem;
   color: var(--ink-soft);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 11px;
